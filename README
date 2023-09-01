@@ -1,0 +1,746 @@
+/**********************************************************
+* Project 3: ZAP
+* CS 15
+* README
+* Sam Miller
+*********************************************************/
+
+Compile/run:
+
+     - Compile using
+            make
+     - run executable with
+        ./zap zap inputFile outputFile
+        or
+        ./zap unzap inputFile outputFile
+
+Program Purpose:
+      
+     The purpose of this program is to be able to compress and decompress
+     text files in a timely manner. 
+
+Acknowledgements:  
+
+     I would like to thank Milod and all of the TA's. I probably worked with
+     half of the TA's for cs15 so I just want to thank everyone for helping
+     me learn and build this program. This was a great learning expereince
+     for me. Specifically, I would like to thank my OH TA's Dameli and Luke
+     who I have learned so much from. 
+
+Files: 
+
+     phaseOne.cpp
+
+          This is implementation of my frequency counter, my serializer and my
+          deserializer. 
+
+     phaseOne.h
+
+          This is the interface of my functions mentioned above. 
+
+     unit_tests.h
+
+          This is where my unit testing takes place that I tested all of my 
+          phaseOne functions for this submission. I tested that I was 
+          serializing and encoding correctly in my phase one functions. 
+
+     HuffmanTreeNode.h
+
+          This was a given file for the interface of the HuffmanTreeNode class.
+          this file gives me the ability to make a huffman tree and modify it.
+
+     main.cpp
+
+          This is my local main file. For phase one, i didn't end up utalizing
+          this. For phase two, I just make an instance of Huffman
+
+     MakeFile
+
+          this is my makeFile that compiles, provides and cleans this program
+
+     HuffmanCoder.cpp
+
+          Huffmancoder is the week two phase of this project. This file runs a
+          command line, opens/closes files, and saved compressed/decompresssed
+          files. This is the implementation of the functionality of the encoder
+          and decoder. 
+
+     HuffmanCoder.h
+
+          This is the interface of the functions required for encoding and 
+          decoding. This class is essentially the entire zap program with some
+          functions included from phaseOne.cpp
+
+     BinaryIO.h
+
+          This is a provided class that has many capabilities. Reading and 
+          and writing to files primarily. 
+
+     all_conll_english.txt
+
+          This is a provided testing files. I used this in the diff test 
+          process. This is useful for seeing if my program was fast enough 
+          because the file is so big. 
+
+     banana_apple.txt
+
+          Another provided test file. Very straight forward test for the diff
+          test process. 
+
+     ecoli.coli
+
+          Similiarly to all_conll_english.txt, this file is a large file that
+          is great for diff tests and seeing if your program has fast enough
+          run time. 
+
+     emptyFile.txt
+
+          This was a file that I created to see if my program is capable of 
+          handling the edge case where the file is empty. 
+
+     hi.txt
+
+          Another provided test file. Very straight forward test for the diff
+          test process. 
+
+     newOutput.txt
+
+          this was the file that my ./zap program was writing to after encoding
+          in the diff test process. 
+
+     referenceOutput.txt
+
+          This was the file that ./the_zap was writing to after encoding during
+          the diff test process. 
+
+     refunzapOutput.txt
+
+          This was the file that ./the_zap was writing to after decoding during
+          diff test process. 
+
+     sentences.txt
+
+          Another provided test file. Very straight forward test for the diff
+          test process. 
+     
+     test.txt
+
+          This was the first test that I made for encoding testing. I wanted to
+          make the tree that was in the spec so this test is designed to 
+          that tree. 
+
+     unzapOutput.txt
+
+          This was the file that ./zap was writing to after decoding during
+          the diff test process. 
+
+     works_of_shakespear.txt
+
+          This is a provided testing files. I used this in the diff test 
+          process. This is useful for seeing if my program was fast enough 
+          because the file is so big. 
+
+Data Structures:
+
+      Queue:
+
+          Argueably the most important data structure in this program is the
+          Priority Queue. A Priority Queue is a queue that has weights in the
+          organization of the nodes. The priority queue is being organized by
+          a min heap in the background, but the priority queue still funcitions
+          as a queue under the hood. This was the perfect data 
+          structure for this program because it is naturually capable of 
+          building Binary trees which is purpose of the priority queue in this
+          program. The prioroity queue is naturally capable of building 
+          binary trees because it pushes out the lowest frequency nodes first,
+          which makes the higher frequency nodes at the top of the tree and
+          lower frequency nodes at the bottom of the tree - just how a binary
+          tree should be built. Becuase a queue is essentially a linked list
+          under the hood, there is O(1) run time for insertion and deletion. 
+          This is fantastic for this program because adding/deleting from the
+          tree is the primary usage of the program in this project. I had to 
+          keep run time in mind so it is fantastic that there was O(1) run
+          time. With this being said, the min heap feature of the queue had
+          O(log n) run time which I will discuss more later. 
+
+      Array:
+
+          Another data structure use in this program is an array. These arrays
+          found in the forms of vectors in this program. The primary purpose of
+          these vectors is to store binary pathes, characture frequencies and 
+          storing strings typed into the command line. The vector/array is the 
+          perfect data struture for this program because of it's O(1) runtime
+          for accessing data in an array. Speed was a priority in this program
+          and so that was a great data structure to use. Another great reason
+          I used vectors/arrays was because you can easily abstact the
+          organizaition of data within the array. An example of this in the 
+          program was when I was storing the frequency of different ascii 
+          chars. Because ascii chars are really just ints under the hood, I 
+          just increased the number inside the corrosponding integer value of
+          each char. Another feature of the vector that was really nice to work
+          with was the fact that I knew it was dynamic so I never had to worry
+          about it being too small. With that being said, I don't think my 
+          vector ever would have had to expand because I allocated 256 spaces -
+          the same number of spaces for each ascii character, but if my vector
+          had to expand, that would have been one of the more costly runtimes
+          to copy allocate a new vector and copy over the contents of my data
+          stored in that vector. 
+
+      BinaryTree:
+
+          Another hugely important data structure that was used during this 
+          program is a binary tree. This was used because Huffman Trees are
+          an efficient algorithm for compressing and decompressing data. As I 
+          am sure that you are aware, a huffman tree is a binary tree that is 
+          organized based on the frequencies of chars. The binary tree is the
+          perfect data structure for this project becuase the Huffman Coder 
+          algorithm is capable of organizing the data of a file in a way that
+          takes significanly less bits then previously required. This is 
+          essentially the entire purpose of this program. Not only the fact 
+          that the binary tree was part of what made this program capable of 
+          lossy compression, the accociated runtimes with adding/removing nodes
+          from the tree is O(1) which is perfect because this program had to 
+          be congnisant of run time efficiency. Another part of the program 
+          where this came into play was when the program was terminating, I 
+          had to call deleteTree() to free all the data in the tree in order
+          to avoid memory leak issues. 
+
+          The other implementation of binary tree was used for building the 
+          priority queue. There is a min heap function used that builds a
+          binary tree where the lowest value node is the root of the tree and
+          as you move down the tree, the values become larger. This design is
+          makes the priority queue work. Similarly to many of the features 
+          mentioned above, insertion and deletion for min heap is O(log n)
+          which is relatively fast. 
+    
+
+Algorithm Overview: 
+
+      A couple of the algorithms that are most relied on in this program: 
+          
+          stringDecoder()
+
+          This was one of the most complicated algorithms just because of the
+          time complexity involved. To give you a run down the function, I 
+          amout reconstrucing the text data that was origninally plugged into 
+          the zap fuction. In other words. I am de-compressing the data after 
+          compressing the data. I do this by staring at the root of the tree
+          and depending if the program encoungers a 1 or a 0. If a 1 is 
+          encountered the program traverses to the right node down the tree.
+          If a 0 is encountered, the program will traverse left down the tree.
+          Meanwhile, there is an if function that checks if the root is at a
+          leaf. If it is, then the root pointer gets reset back to the root of
+          the tree as well as appends the data value in the leaf node to an 
+          already declared string. An important part of this algorithm is to 
+          check to see if the function reached the end of a binary string while
+          not at a leaf node. The first time I made this function, I did it
+          recursively. This functioned accurately, but it was slow. For big 
+          files, the program would get "killed" which is essentially timing
+          out. I had to rebuild this function using a while loop which turned 
+          out to be significanly faster. This was my first experience where I 
+          really had to consider time complexity in my programming. 
+
+          deserialize_helper() & deserialize_tree()
+
+          deserialize_tree is a funciton that generates a binary tree based off
+          of a serialized string that represents the organization of a binary
+          tree. This is a recursive function that uses the trampoline function
+          deserialize_helper() to perform that recursion. deserialize_helper 
+          contains most of the funcitonality of this program. To give you a run
+          down of this function, this program builds a tree by reading in a 
+          serialized string. If the char is an 'I', the program makes an 
+          internal huffman node with a null stored in its data value. From
+          here, the program moves to the left and right childnode and recalls
+          deserialize_helper to make those nodes as well. If 'L' is read in, 
+          the program knows to make a leaf node. The program starts by making
+          a node with the char value found after the 'L' that was originally 
+          read in. One of the unique aspects of this function is how it 
+          traverses the string that was read in. This funciton traverses by 
+          using substr() to incrementally decrease the size of the string that
+          was read in. This allows the program to evenaully read in the whole
+          string. 
+
+          build_tree()
+
+          The last algorithm that I think is important to discuss is the 
+          build_tree() function. This function is enormously important because
+          it is part of the core competency of the decompression in this 
+          program. To give a high level over view of this algorithm, it starts
+          by making a node with its corrosponding data value and frequency.
+          From here, the algorithm pushes all of those nodes into the priority
+          queue. As mentioned previously, the design of the priority queue is
+          perfect for constructing Huffman trees becuase lowest frequency nodes
+          have the highest priority and get made into leaves of the tree first.
+          Once build tree made all of the nodes, it pushed them all back onto 
+          the priority queue. From here, the queue began to make internal nodes
+          by combining the leaf nodes. These internal nodes would then be 
+          pushed back on the priority queue. This process happened until a full
+          Huffman tree was build with only the root of the tree remaining in
+          the queue. The program then returns the root of the tree so that
+          other functions then have access to the whole tree. 
+
+
+
+Testing:
+
+   count_freq_test() 
+
+     This is the test provided in the spec to test my count frequency function.
+
+   count_freq_whiteSpace()
+
+     This was used to test my count frequency. I tested that it would work with
+     lots of white spaces. 
+
+   count_freq_TwoWords() 
+
+     This was used to test my count frequency. I tested that it would work with
+     white spaces and chars.
+
+   count_CapVsLowerCase()
+
+     This was used to test my count frequency. I tested that it would work with
+     capital vs. lower case chars
+
+   count_LongStressTest()  
+
+     This was used to test my count frequency. I tested that it would work with
+     all differnt ascii values
+
+   count_newLine() 
+
+     This was used to test my count frequency. I tested that it would work with
+     new lines
+
+   count_SpecExample()
+
+     This is the test provided in the spec to test my count frequency function. 
+
+   testTree()
+
+     This was the tree provided in the spec. I tested that my serialize tree 
+     worked against the provided tree and string in the spec. 
+
+   testTreeTwo()
+
+     This was another random tree that I made to test my serialize tree
+     function
+
+   test_deserialize()
+
+     This was a test that I ran to ensure that my deserilize three funciton 
+     works. This test was built from the random second tree that I built for 
+     testing.
+
+    I am beginning to test my encoder functions now after having to handle a 
+    nightmare makefile situation. I ended up accidntally removing BinaryIO.o
+    and had to redownload it. 
+
+   void test_buildTree()
+
+    This test was built to test that I was properly building a tree. I have a
+    cout inside of my count frequencies function and inside of my buidl tree 
+    funciton so that it prints out the values and frequencies. 
+
+   void test_encoder()
+
+    This test was built to test my encoder. I inputted "BaNana" into the 
+    encoder and out came the binary strings for each char. The following
+    is what print into terminal. 
+
+      a: 0
+      n: 10
+      B: 110
+      N: 111
+      ILaILnILBLN
+
+   void test_encoder_tw0Characters()
+
+    In this test, I did the same as above, but I only tested with a string of 
+    size two. "xo" was my inputted string. The following is what was printed
+    out for the pathes of each string which makes sense. 
+
+    o: 0
+    x: 1
+    ILoLx 
+
+
+  void specTestEncoder()
+
+    For this test, I inputted "aaaaabbbbbfffcdeee" which should produce the
+    same tree and binary codings as the spec. 
+
+    These were the pathes that were outputted from the test. I am confused by
+    this. It seems to me that the frequencies are not matching up. I am going
+    to ask about this in office hours. It seems to me that 'a' should be the
+    left most node but it isn't here. 
+    01 01 01 01 01 10 10 10 10 10 111 111 111 1100 1101 00 00 00
+    e: 00
+    a: 01
+    b: 10
+    c: 1100
+    d: 1101
+    f: 111
+    IILeLaILbIILcLdLf
+
+    I made three encoder function that are not working. It is throwing a
+    runtimer error that says "unable to open file." After consulting a TA, I
+    learned that this is okay since my program isn't being tested in main where
+    I have to build the functionality to open a program. I think from here on
+    out I will be diff testing. 
+  
+    Okay so I went to office hours and it was explained to me that I do not
+    have to have the same exact tree as the spec and that there are many 
+    different valid trees so I am not worried about my output above. It seems
+    to be functioning perfeclty fine to me. 
+
+    test.txt
+
+    "aaaaabbbbbfffcdeee" - This is the string stored in the test.txt file. 
+    I compared this to the_zap and my output is different. I need to 
+    reconfigure my encoder.
+
+    Okay So I just had a major break through. The number of bits that my 
+    encoder function was making was different than the reference encoder. I got
+    to the bottom of this by figuring out that my binary string function was
+    broken. This was broken because my string stream had to be reset. I had
+    no idea that this was a thing but now I know.
+
+    vm-hw00{smille28}57: ./Zap zap test.txt testOutput.txt
+
+    zap
+    e: 00
+    a: 01
+    b: 10
+    c: 1100
+    d: 1101
+    f: 111
+    010101010101101010101011111111111001101000000
+
+
+    IILeLaILbIILcLdLf
+
+    Success! Encoded given text using 43 bits.
+    else
+
+    vm-hw00{smille28}58: ./the_zap zap test.txt testOutput.txt
+    Success! Encoded given text using 43 bits.
+    
+    Above is the output that I get when I run zap. SO FIRED UP! My number of 
+    bits matches the reference's bits. This looks like a valid Binary string,
+    serialized string and proper individual pathes. This is very good news. 
+    I will continue testing from here. 
+
+    Okay so I just debugged a pretty cool thing. My run function, which 
+    runs the command line and calls encoder and decoder wasn't working with
+    argv[1] == "zap"
+    This was giving me an error saying that I couldn't compare string literals. 
+    I found on stackoverflow the way around this issue. 
+    strcmp(argv[1],"zap") == 0. If this is satasfied, I call encoder and this
+    has been working so that is great. 
+
+    vm-hw01{smille28}180: ./Zap zap banana.txt testOutput.txt
+    Success! Encoded given text using 11 bits.
+    vm-hw01{smille28}181: ./the_zap zap banana.txt reftestOutput.txt
+    Success! Encoded given text using 11 bits.
+    vm-hw01{smille28}182: diff testOutput.txt reftestOutput.txt
+
+    This was my first file that I diffed!! I zapped the bannana file and diffed
+    it against my zap funciton. No differences so this is great. 
+
+    vm-hw05{smille28}61: ./Zap unzap testOutput.txt unzapOutput.txt
+    vm-hw05{smille28}62: ./the_zap unzap testOutput.txt refunzapOutput.txt
+    vm-hw05{smille28}63: diff unzapOutput.txt refunzapOutput.txt
+    1c1
+    < BaNan
+    \ No newline at end of file
+    ---
+    > BaNana
+    \ No newline at end of file
+    vm-hw05{smille28}64: diff unzapOutput.txt refunzapOutput.txt
+    1c1
+    < BaNan
+    \ No newline at end of file
+    ---
+    > BaNana
+    \ No newline at end of file
+
+    So I ran another diff test where I am testing to see if my unzap is working
+    properly. It appears to me that I am stopping one character short. 
+
+    vm-hw05{smille28}81: ./Zap zap sentences.txt testOutput.txt
+    Success! Encoded given text using 931 bits.
+    vm-hw05{smille28}82: ./the_zap zap sentences.txt reftestOutput.txt
+    Success! Encoded given text using 931 bits.
+    vm-hw05{smille28}83: ./Zap unzap testOutput.txt unzapOutput.txt
+    "I wish it need not happen in my time," said Frodo. "So do I," said 
+    Gandalf, "and so do all live live to see such times. But that is not
+    for them to decide. All we have to decide is what to do with the time that 
+    is given us.
+    vm-hw05{smille28}84: ./the_zap unzap testOutput.txt refunzapOutput.txt
+    vm-hw05{smille28}85: diff unzapOutput.txt refunzapOutput.txt
+    1c1
+    < "I wish it need not happen in my time," said Frodo. "So do I," said 
+    Gandalf, "and so do all live live to see such times. But that is not for 
+    them to decide. All we have to decide is what to do with the time that is 
+    given us.
+    \ No newline at end of file
+    ---
+    > "I wish it need not happen in my time," said Frodo. "So do I," said 
+    Gandalf, "and so do all live live to see such times. But that is not for 
+    them to decide. All we have to decide is what to do with the time that is
+    given us."
+    \ No newline at end of file
+
+    Okay so I just ran another diff test. It appears to have the same problem
+    where my unzap is running one character short. 
+
+    vm-hw07{smille28}54: ./Zap zap sentences.txt testOutput.txt
+    Success! Encoded given text using 931 bits.
+    vm-hw07{smille28}55: ./the_zap zap sentences.txt reftestOutput.txt
+    Success! Encoded given text using 931 bits.
+    vm-hw07{smille28}56: ./Zap unzap testOutput.txt unzapOutput.txt
+    931
+    "I wish it need not happen in my time," said Frodo. "So do I," 
+    said Gandalf, "and so do all live live to see such times. But that is not 
+    for them to decide. All we have to decide is what to do with the time that 
+    is given us
+    vm-hw07{smille28}57: ./Zap zap ecoli.coli testOutput.txt
+    Success! Encoded given text using 9277380 bits.
+    vm-hw07{smille28}58: ./the_zap zap ecoli.coli reftestOutput.txt
+    Success! Encoded given text using 9277380 bits.
+    vm-hw07{smille28}59: ./the_zap unzap testOutput.txt refunzapOutput.txt
+    vm-hw07{smille28}60: ./Zap unzap testOutput.txt unzapOutput.txt
+    Killed
+
+    Okay so I have some other problems as well. My program is taking way too 
+    long to run so it is killing my program. 
+
+    I reconfigured my enoder function to use a while loop instead of recursion.
+    I learned in office hours that recurssion takes significanly longer and So
+    I did that. This took care of my stopping too short problem and the runtime
+    of my program. 
+
+    vm-hw07{smille28}119: ./Zap zap ecoli.coli testOutput.txt
+    Success! Encoded given text using 9277380 bits.
+    vm-hw07{smille28}120: ./the_zap zap ecoli.coli reftestOutput.txt
+    Success! Encoded given text using 9277380 bits.
+    vm-hw07{smille28}121: ./Zap unzap testOutput.txt unzapOutput.txt
+    vm-hw07{smille28}122: ./the_zap unzap testOutput.txt refunzapOutput.txt
+    vm-hw07{smille28}123: diff unzapOutput.txt refunzapOutput.txt
+
+    I just zapped and unzapped ecoli and there were no differences. 
+
+    I still have some runtime errors to take care of. 
+
+    vm-hw09{smille28}61: ./Zap zap ecoli.coli testOutput.txt
+    Success! Encoded given text using 9277380 bits.
+    vm-hw09{smille28}62: ./the_zap zap ecoli.coli reftestOutput.txt
+    Success! Encoded given text using 9277380 bits.
+    vm-hw09{smille28}63: ./the_zap unzap testOutput.txt refunzapOutput.txt
+    vm-hw09{smille28}64: ./Zap unzap testOutput.txt unzapOutput.txt
+    vm-hw09{smille28}65: diff unzapOutput.txt refunzapOutput.txt
+
+    Okay I was just able to implement a runtime error that states that the 
+    encoding did not match. I was having troubl with this but the above shows 
+    that I was able to diff test with it. 
+
+    vm-hw09{smille28}67: ./the_zap zap works_of_shakespeare reftestOutput.txt
+    terminate called after throwing an instance of 'std::runtime_error'
+      what():  Unable to open file works_of_shakespeare
+    Abort (core dumped)
+    vm-hw09{smille28}68: ./the_zap zap works_of_shakespeare.txt
+                         reftestOutput.txt
+    Success! Encoded given text using 25258000 bits.
+    vm-hw09{smille28}69: ./Zap zap works_of_shakespeare.tx testOutput.txt
+    terminate called after throwing an instance of 'std::runtime_error'
+      what():  Unable to open file
+
+    I just ran a test to see if my program threw the right error if the a file
+    couldn't be opened. It did not. Will have to reconfigure this.
+    
+    vm-hw09{smille28}71: ./Zap zap works_of_shakespeare.tx testOutput.txt
+    terminate called after throwing an instance of 'std::runtime_error'
+    what():  Unable to open file works_of_shakespeare.tx
+
+    Fixed it. 
+
+    vm-hw09{smille28}72: ./the_zap zap works_of_shakespeare.txt 
+                        reftestOutput.txt
+    Success! Encoded given text using 25258000 bits.
+    vm-hw09{smille28}73: ./Zap zap works_of_shakespeare.txt testOutput.txt
+    Success! Encoded given text using 25258000 bits.
+    vm-hw09{smille28}74: ./Zap unzap testOutput.txt unzapOutput.txt
+
+    vm-hw09{smille28}75: 
+    vm-hw09{smille28}75: ./the_zap unzap testOutput.txt refunzapOutput.txt
+    vm-hw09{smille28}76: diff unzapOutput.txt refunzapOutput.txt
+
+    I just diff tested the works of shakespear with no errors. I am beginning
+    to feel confidenct that my program works very well. 
+
+    I still have valgrind errors in my unzap program. I will now address that.
+
+    Actually, scratch that. I think my deconstructor is working actually. 
+    Here is the proof: 
+
+    vm-hw09{smille28}78: valgrind ./Zap zap works_of_shakespeare.txt 
+                testOutput.txt
+    ==1200770== Memcheck, a memory error detector
+    ==1200770== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+    ==1200770== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright
+     info
+    ==1200770== Command: ./Zap zap works_of_shakespeare.txt testOutput.txt
+    ==1200770== 
+    Success! Encoded given text using 25258000 bits.
+    ==1200770== 
+    ==1200770== HEAP SUMMARY:
+    ==1200770==     in use at exit: 0 bytes in 0 blocks
+    ==1200770==   total heap usage: 342 allocs, 342 frees, 88,276,403 bytes
+                 allocated
+    ==1200770== 
+    ==1200770== All heap blocks were freed -- no leaks are possible
+    ==1200770== 
+    ==1200770== For lists of detected and suppressed errors, rerun with: -s
+    ==1200770== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+    
+    vm-hw09{smille28}79: valgrind ./Zap unzap testOutput.txt unzapOutput.txt
+    ==1227678== Memcheck, a memory error detector
+    ==1227678== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+    ==1227678== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright
+                 info
+    ==1227678== Command: ./Zap unzap testOutput.txt unzapOutput.txt
+    ==1227678== 
+    ==1227678== 
+    ==1227678== HEAP SUMMARY:
+    ==1227678==     in use at exit: 0 bytes in 0 blocks
+    ==1227678==   total heap usage: 402 allocs, 402 frees, 158,731,864 bytes 
+                  allocated
+    ==1227678== 
+    ==1227678== All heap blocks were freed -- no leaks are possible
+    ==1227678== 
+    ==1227678== For lists of detected and suppressed errors, rerun with: -s
+    ==1227678== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+    vm-hw06{smille28}54: ./Zap zap emptyFile.txt testOutput.txt
+    terminate called after throwing an instance of 'std::runtime_error'
+      what():  Cannot zap an empty file!
+    Abort (core dumped)
+    vm-hw06{smille28}55: ./the_zap zap emptyFile.txt testOutput.txt
+    terminate called after throwing an instance of 'std::runtime_error'
+      what():  Cannot zap an empty file!
+    Abort (core dumped)
+
+    I just tested that my program is able to throw the appropriate error when
+    the input file is empty. 
+
+    vm-hw06{smille28}70: ./zap zap all_conll_english.txt testOutput.txt
+    Success! Encoded given text using 22716907 bits.
+    vm-hw06{smille28}71: ./the_zap zap all_conll_english.txt reftestOutput.txt
+    Success! Encoded given text using 22716907 bits.
+    vm-hw06{smille28}72: ./the_zap unzap reftestOutput.txt refunzapOutput.txt
+    vm-hw06{smille28}73: ./zap unzap testOutput.txt unzapOutput.txt
+    vm-hw06{smille28}74: diff testOutput.txt reftestOutput.txt
+
+    I just diff tested all_conll_english.txt which is a pretty large file. 
+    Great news. Great read as well. 
+  
+    vm-hw09{smille28}94: valgrind ./zap zap all_conll_english.txt 
+    testOutput.txt
+    ==1426399== Memcheck, a memory error detector
+    ==1426399== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+    ==1426399== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright
+     info
+    ==1426399== Command: ./zap zap all_conll_english.txt testOutput.txt
+    ==1426399== 
+    Success! Encoded given text using 22716907 bits.
+    ==1426399== 
+    ==1426399== HEAP SUMMARY:
+    ==1426399==     in use at exit: 0 bytes in 0 blocks
+    ==1426399==   total heap usage: 335 allocs, 335 frees, 85,750,715 bytes
+     allocated
+    ==1426399== 
+    ==1426399== All heap blocks were freed -- no leaks are possible
+    ==1426399== 
+    ==1426399== For lists of detected and suppressed errors, rerun with: -s
+    ==1426399== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+    vm-hw09{smille28}95: ./the_zap zap all_conll_english.txt reftestOutput.txt 
+    Success! Encoded given text using 22716907 bits.
+    vm-hw09{smille28}96: valgrind ./zap zap all_conll_english.txt 
+    testOutput.txt
+    ==1456535== Memcheck, a memory error detector
+    ==1456535== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+    ==1456535== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright 
+    info
+    ==1456535== Command: ./zap zap all_conll_english.txt testOutput.txt
+    ==1456535== 
+    Success! Encoded given text using 22716907 bits.
+    ==1456535== 
+    ==1456535== HEAP SUMMARY:
+    ==1456535==     in use at exit: 0 bytes in 0 blocks
+    ==1456535==   total heap usage: 335 allocs, 335 frees, 85,750,715 bytes
+     allocated
+    ==1456535== 
+    ==1456535== All heap blocks were freed -- no leaks are possible
+    ==1456535== 
+    ==1456535== For lists of detected and suppressed errors, rerun with: -s
+    ==1456535== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+    vm-hw09{smille28}97: valgrind ./zap unzap testOutput.txt unzapOutput.txt
+    ==1487037== Memcheck, a memory error detector
+    ==1487037== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+    ==1487037== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright info
+    ==1487037== Command: ./zap unzap testOutput.txt unzapOutput.txt
+    ==1487037== 
+    ==1487037== 
+    ==1487037== HEAP SUMMARY:
+    ==1487037==     in use at exit: 0 bytes in 0 blocks
+    ==1487037==   total heap usage: 391 allocs, 391 frees, 151,106,750 bytes 
+    allocated
+    ==1487037== 
+    ==1487037== All heap blocks were freed -- no leaks are possible
+    ==1487037== 
+    ==1487037== For lists of detected and suppressed errors, rerun with: -s
+    ==1487037== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+    vm-hw09{smille28}98: ./the_zap unzap reftestOutput.txt refunzapOutput.txt
+    vm-hw09{smille28}99: diff unzapOutput.txt refunzapOutput.txt'
+
+    I reconfigued parts of my program to get rid some warnings. I am now using
+    a vector instead of an array so my warnings went away. Above I diff tested
+    with valgrind to make sure my program is working right. 
+    
+    The only problem I know that I still have is valgrind with throwing errors. 
+    Also, at this point. I know that I have a 47 out of 50 on autograder. 
+    One of the test that I failed was an incorrect command line which I fixed
+    right away. So I'm pretty sure I'm at a 48/50. 
+
+    Okay so I ran some more tests. I diff tested with MobyDick.txt, 
+    captainUnderPants.txt and the bible.txt. I have diff tested with all of the
+    provided testing files aswell. I just ran the Auto Grader and I got a 
+    49/50. I am confident that my progam works besides for the small valgrind
+    problem that I couldln't get to the bottom of. 
+
+    I am trying to submit right now and most of the test files that I made are
+    too large so I cannot submit them. 
+
+
+Hours Spent: 
+
+    I spent around 10 hours on this assignment. 
+
+    Thank you for reading. Please go easy on me. 
+    
+    Best, 
+    Sam
+
+
+
+
+    
+
+
+      
+
+
+
+
+
